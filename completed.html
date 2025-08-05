@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tâches complétées</title>
+    <style>
+        body {
+            background: #0b3e6f;
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0b3e6f;
+            margin-top: 0;
+        }
+        /* Summary bar for visual indicators */
+        .summary-bar {
+            display: flex;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 15px 0 25px;
+            min-height: 30px;
+        }
+        .summary-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            padding: 5px;
+            color: #ffffff;
+            white-space: nowrap;
+        }
+        /* Category sections */
+        .category-section {
+            margin-bottom: 25px;
+        }
+        .category-section h2 {
+            margin: 0;
+            margin-bottom: 4px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 18px;
+        }
+        .category-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .category-section th, .category-section td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .category-section th {
+            background-color: #e7eaf3;
+            color: #0b3e6f;
+        }
+        .category-section tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .btn-bar {
+            margin-top: 15px;
+            text-align: right;
+        }
+        .btn-bar button {
+            background-color: #dc3545;
+            color: #ffffff;
+            border: none;
+            padding: 8px 14px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-bar button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tâches complétées</h1>
+        <!-- Bar de résumé pour les indicateurs visuels -->
+        <div id="summaryBar" class="summary-bar"></div>
+        <!-- Conteneur pour les sections par catégorie -->
+        <div id="categoryContainer"></div>
+        <div class="btn-bar">
+            <button id="clearCompletedBtn">Réinitialiser</button>
+        </div>
+    </div>
+<script>
+/**
+ * Charge les tâches complétées depuis localStorage et construit
+ * dynamiquement le résumé et les sections par catégorie avec des
+ * indicateurs visuels. Chaque catégorie est associée à une couleur
+ * afin d'offrir une représentation graphique rapide du volume des
+ * tâches terminées.
+ */
+function loadCompleted() {
+    let completed = [];
+    try {
+        completed = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+    } catch (e) {
+        completed = [];
+    }
+    // Grouper les tâches par catégorie
+    const groups = {};
+    completed.forEach(item => {
+        if (!groups[item.category]) groups[item.category] = [];
+        groups[item.category].push(item);
+    });
+    const totalTasks = completed.length;
+    // Définir une liste de couleurs pour les catégories
+    const colors = ['#4CAF50','#2196F3','#FF9800','#9C27B0','#F44336','#3F51B5','#009688','#673AB7','#607D8B'];
+    // Construire la barre de résumé
+    const summaryBar = document.getElementById('summaryBar');
+    summaryBar.innerHTML = '';
+    let colorIndex = 0;
+    Object.keys(groups).forEach(category => {
+        const count = groups[category].length;
+        const color = colors[colorIndex % colors.length];
+        const widthPercent = totalTasks > 0 ? (count / totalTasks * 100) : 0;
+        const segment = document.createElement('div');
+        segment.className = 'summary-segment';
+        segment.style.backgroundColor = color;
+        segment.style.width = widthPercent + '%';
+        // Mettre le nom et le nombre au centre de la partie correspondante
+        segment.textContent = `${category} (${count})`;
+        summaryBar.appendChild(segment);
+        colorIndex++;
+    });
+    // Construire les sections de catégories
+    const categoryContainer = document.getElementById('categoryContainer');
+    categoryContainer.innerHTML = '';
+    colorIndex = 0;
+    Object.keys(groups).forEach(category => {
+        const color = colors[colorIndex % colors.length];
+        const tasks = groups[category];
+        // Créer le conteneur pour cette catégorie
+        const section = document.createElement('div');
+        section.className = 'category-section';
+        // En-tête de catégorie avec couleur
+        const header = document.createElement('h2');
+        header.textContent = `${category} (${tasks.length})`;
+        header.style.backgroundColor = color;
+        section.appendChild(header);
+        // Créer la table pour les tâches
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        thead.innerHTML = '<tr><th>Tâche</th><th>Date de complétion</th></tr>';
+        table.appendChild(thead);
+        const tbody = document.createElement('tbody');
+        tasks.forEach(item => {
+            const tr = document.createElement('tr');
+            // Certaines versions précédentes stockaient la date sous 'date'
+            const date = item.dateCompleted || item.date || '';
+            tr.innerHTML = `<td>${item.task}</td><td>${date}</td>`;
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        section.appendChild(table);
+        categoryContainer.appendChild(section);
+        colorIndex++;
+    });
+}
+/**
+ * Vide la liste des tâches complétées et recharge l'affichage.
+ */
+function clearCompleted() {
+    localStorage.setItem('completedTasks', '[]');
+    loadCompleted();
+}
+document.getElementById('clearCompletedBtn').addEventListener('click', clearCompleted);
+window.addEventListener('load', loadCompleted);
+</script>
+</body>
+</html>
