@@ -128,6 +128,40 @@
         .add-row:hover {
             background-color: #d3d8e0;
         }
+
+        /* Comment section and delete button styles */
+        /* Override the default list item layout to use a three‑column grid: delete button, text, checkbox */
+        .card ul li, .subsection ul li {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 6px;
+        }
+        /* Red delete icon appearing on each row */
+        .delete-btn {
+            color: #dc3545;
+            cursor: pointer;
+            user-select: none;
+        }
+        /* Container for per‑category comments */
+        .comment-section {
+            margin-top: 10px;
+            border-top: 1px dashed #0b3e6f;
+            padding-top: 6px;
+        }
+        .comment-section h4 {
+            margin: 4px 0 4px;
+            font-size: 14px;
+            color: #0b3e6f;
+            font-weight: bold;
+        }
+        .comment-area {
+            min-height: 40px;
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            padding: 4px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -329,7 +363,50 @@ function wrapListItems() {
             });
         }
     });
+    // After ensuring checkboxes are attached, also ensure delete buttons exist
+    attachDeleteButtons();
 }
+
+// Attach delete buttons to each list item (adds an 'x' button at the beginning)
+function attachDeleteButtons() {
+    document.querySelectorAll('.card ul li, .subsection ul li').forEach(li => {
+        if (!li.querySelector('.delete-btn')) {
+            const del = document.createElement('span');
+            del.className = 'delete-btn';
+            del.textContent = '✖';
+            // Prevent editing of the delete button itself
+            del.setAttribute('contenteditable', 'false');
+            del.addEventListener('click', function (e) {
+                e.stopPropagation();
+                li.remove();
+                // Save the board state after removing an item
+                saveBoardState();
+            });
+            // Insert the delete button as the first child of the list item
+            li.insertBefore(del, li.firstChild);
+        }
+    });
+}
+
+// Attach comment sections to each card with an editable title and area
+function attachCommentSections() {
+    document.querySelectorAll('.card').forEach(card => {
+        if (!card.querySelector('.comment-section')) {
+            const commentSec = document.createElement('div');
+            commentSec.className = 'comment-section';
+            const title = document.createElement('h4');
+            title.setAttribute('contenteditable', 'true');
+            title.textContent = 'Commentaire';
+            commentSec.appendChild(title);
+            const area = document.createElement('div');
+            area.className = 'comment-area';
+            area.setAttribute('contenteditable', 'true');
+            commentSec.appendChild(area);
+            card.appendChild(commentSec);
+        }
+    });
+}
+
 // Function to create add-row button
 function createAddRowButton(ul) {
     const btn = document.createElement('button');
@@ -341,7 +418,9 @@ function createAddRowButton(ul) {
         li.textContent = 'Nouvelle ligne';
         li.dataset.created = Date.now();
         ul.appendChild(li);
+        // Reapply checkboxes and delete buttons for the new row
         wrapListItems();
+        attachDeleteButtons();
         // Persist state after adding a new line
         saveBoardState();
     });
@@ -382,6 +461,9 @@ function loadBoardState() {
     // Reattach row buttons and checkboxes after loading the content
     attachRowButtons();
     wrapListItems();
+    // Add comment sections and delete buttons after restoring list items
+    attachCommentSections();
+    attachDeleteButtons();
 }
 // Function to create new card
 function createCard(title) {
@@ -395,6 +477,10 @@ function createCard(title) {
     card.appendChild(ul);
     const addBtn = createAddRowButton(ul);
     card.insertBefore(addBtn, ul);
+    // Add a comment section to the new card
+    attachCommentSections();
+    // Add delete buttons to existing rows (if any)
+    attachDeleteButtons();
     // Persist state after creating a new card
     saveBoardState();
     return card;
@@ -406,7 +492,10 @@ document.getElementById('addCategoryBtn').addEventListener('click', function () 
     const title = prompt('Nom de la nouvelle catégorie :');
     const card = createCard(title || 'Nouvelle catégorie');
     document.getElementById('grid').appendChild(card);
+    // Reapply list item helpers for the new category
     wrapListItems();
+    attachCommentSections();
+    attachDeleteButtons();
     // Persist state after adding a new category
     saveBoardState();
 });
