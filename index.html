@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Coordination Opération (Éditable, Tâches complétées)</title>
+    <style>
+        body {
+            background: #0b3e6f;
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .board {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 10px;
+        }
+        .header {
+            color: #ffffff;
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .toolbar button {
+            border: none;
+            padding: 8px 14px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #addCategoryBtn {
+            background-color: #28a745;
+            color: #ffffff;
+        }
+        #addCategoryBtn:hover {
+            background-color: #218838;
+        }
+        #completedBtn {
+            background-color: #17a2b8;
+            color: #ffffff;
+        }
+        #completedBtn:hover {
+            background-color: #138496;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 15px;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 12px 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .card h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #0b3e6f;
+            border-bottom: 2px solid #0b3e6f;
+            padding-bottom: 4px;
+        }
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .card ul li {
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            /* Align text on the left and checkbox on the right */
+            justify-content: space-between;
+        }
+        .task-checkbox {
+            transform: scale(1.1);
+            /* Place a left margin to separate from text when appended */
+            margin-left: 6px;
+        }
+        [contenteditable="true"]:focus {
+            outline: 2px dashed #ff9800;
+        }
+        .subsection {
+            margin-top: 10px;
+        }
+        .subsection h4 {
+            margin: 6px 0 4px;
+            font-size: 14px;
+            color: #0b3e6f;
+            font-weight: bold;
+            border-bottom: 1px solid #0b3e6f;
+            padding-bottom: 2px;
+        }
+        .subsection ul li {
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: space-between;
+        }
+        /* Style pour les boutons d'ajout de ligne */
+        .add-row {
+            align-self: flex-start;
+            margin: 4px 0 6px 0;
+            background-color: #e7eaf3;
+            color: #0b3e6f;
+            border: none;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .add-row:hover {
+            background-color: #d3d8e0;
+        }
+    </style>
+</head>
+<body>
+<div class="board">
+    <!-- Header editable -->
+    <div class="header" contenteditable="true">Coordination Opération</div>
+    <!-- Toolbar with actions -->
+    <div class="toolbar">
+        <button id="addCategoryBtn">+ Ajouter une catégorie</button>
+        <button id="completedBtn">Voir tâches complétées</button>
+    </div>
+    <!-- Grid for cards -->
+    <div class="grid" id="grid">
+        <!-- Ligne 1 -->
+        <div class="card">
+            <h3 contenteditable="true">SST / Environnement</h3>
+            <ul>
+                <li contenteditable="true">Pont roulant HX9 – 08/07</li>
+                <li contenteditable="true">Varin – 04/08</li>
+                <li contenteditable="true">M3 FID – 30/07</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 contenteditable="true">Production</h3>
+            <ul>
+                <li contenteditable="true">M7 atérminé : 1000 kg</li>
+                <li contenteditable="true">MD2 minipilot : 200 kg</li>
+                <li contenteditable="true">780 kg slurry BDO : 11 août</li>
+                <li contenteditable="true">Suite à venir : CRB</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 contenteditable="true">Matières premières</h3>
+            <ul>
+                <li contenteditable="true">HCl : 39 % (cible 45 %)</li>
+                <li contenteditable="true">HXK : 68 %</li>
+                <li contenteditable="true">NaOH : 62 %</li>
+                <li contenteditable="true">Filtrat : 9 %</li>
+                <li contenteditable="true">Fuel : 5 cttes (cette semaine)</li>
+            </ul>
+        </div>
+        <!-- Ligne 2 -->
+        <div class="card">
+            <h3 contenteditable="true">Cadencassage</h3>
+            <ul>
+                <li contenteditable="true">Total : 305</li>
+                <li contenteditable="true">Brouillon : 48</li>
+                <li contenteditable="true">En cours : 55</li>
+                <li contenteditable="true">Terminé : 202 (66 %)</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 contenteditable="true">Entretien mécanique</h3>
+            <ul>
+                <li contenteditable="true">GICO à réparer (Mike)</li>
+                <li contenteditable="true">HPGO‑AGO‑K03 : board reçu brisé</li>
+                <li contenteditable="true">D02 : seal mécanique</li>
+                <li contenteditable="true">HPGO‑AGO‑PO1 : boyau à changer</li>
+                <li contenteditable="true">Nourrice Merlin : à changer (Mike)</li>
+                <li contenteditable="true">CF10‑AGO‑PO1 : à réparer</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 contenteditable="true">Point de vigilance</h3>
+            <div class="subsection">
+                <h4 contenteditable="true">À risque</h4>
+                <ul>
+                    <li contenteditable="true">CF10‑AGO‑PO1 (spare ?)</li>
+                    <li contenteditable="true">Seal agitateur BD01</li>
+                    <li contenteditable="true">Big bag – EIV inventaire : 125</li>
+                </ul>
+            </div>
+            <div class="subsection">
+                <h4 contenteditable="true">En suivi</h4>
+                <ul>
+                    <li contenteditable="true">HPGO‑AGO‑K03 : board reçu brisé</li>
+                    <li contenteditable="true">D02 : seal mécanique</li>
+                    <li contenteditable="true">HPGO‑AGO‑PO1 : boyau à changer</li>
+                    <li contenteditable="true">Nourrice Merlin : à changer</li>
+                </ul>
+            </div>
+            <div class="subsection">
+                <h4 contenteditable="true">Informatif</h4>
+                <ul>
+                    <li contenteditable="true">Cadencassage terminé : 202 (66 %)</li>
+                    <li contenteditable="true">HCl actuel : 39 % (cible 45 %)</li>
+                    <li contenteditable="true">M3 FID prévu : 30/07</li>
+                </ul>
+            </div>
+        </div>
+        <!-- Ligne 3 -->
+        <div class="card">
+            <h3 contenteditable="true">Projets</h3>
+            <ul>
+                <li contenteditable="true">FO4 – ventilateur à déplacer</li>
+                <li contenteditable="true">R03 – travaux à venir</li>
+                <li contenteditable="true">Robot FIO – réparation à suivre</li>
+                <li contenteditable="true">Salle blanche – chauffage & ventilation</li>
+                <li contenteditable="true">Pellet</li>
+                <li contenteditable="true">Presse</li>
+                <li contenteditable="true">Phadia</li>
+                <li contenteditable="true">Détecteur HCl</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 contenteditable="true">Technique</h3>
+            <ul>
+                <li contenteditable="true">Lavage SO<sub>2</sub></li>
+                <li contenteditable="true">Cristalliseur</li>
+                <li contenteditable="true">Distillat acide</li>
+                <li contenteditable="true">FB01</li>
+                <li contenteditable="true">Test CM + nettoyage prioritaire</li>
+                <li contenteditable="true">Test DRM</li>
+                <li contenteditable="true">CMI Harper – planifier nettoyage</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 contenteditable="true">Statut équipement</h3>
+            <ul>
+                <li contenteditable="true">Digestion 518 : stand‑by</li>
+                <li contenteditable="true">Cristallisation : en attente du seal</li>
+                <li contenteditable="true">Centrifugeuse : stand‑by</li>
+                <li contenteditable="true">Hammer 1 : en stand‑by</li>
+                <li contenteditable="true">Hammer 2 : off</li>
+                <li contenteditable="true">Meca pulse 1 : stand‑by</li>
+                <li contenteditable="true">Meca pulse 3 : à inspecter (pression positive)</li>
+                <li contenteditable="true">F 71 : stand‑by</li>
+                <li contenteditable="true">Laboratoire : stand‑by</li>
+                <li contenteditable="true">Alcool chambre 500 : à planifier</li>
+                <li contenteditable="true">PLCK : en réflexion</li>
+                <li contenteditable="true">Boiler & Cie : en fonction</li>
+                <li contenteditable="true">Jet Hell : stand‑by</li>
+                <li contenteditable="true">SOZ : attente modification</li>
+                <li contenteditable="true">FO4 : à vider / remplir</li>
+                <li contenteditable="true">HK : 175 kg (1er), 245 kg (2e)</li>
+            </ul>
+        </div>
+        <!-- Ligne 4 -->
+        <div class="card">
+            <h3 contenteditable="true">Ménage</h3>
+            <ul>
+                <li contenteditable="true">Laver cuve HXK</li>
+                <li contenteditable="true">Remplacer pièce HCl</li>
+                <li contenteditable="true">Vérifier fond à vider (OK)</li>
+                <li contenteditable="true">Peindre cadre porte grange</li>
+                <li contenteditable="true">Tapisser l’intérieur des poubelles</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 contenteditable="true">Actions Nisshin</h3>
+            <ul>
+                <li contenteditable="true">Audit hypochlorite</li>
+                <li contenteditable="true">Audit hypotraction</li>
+                <li contenteditable="true">Audit extérieur</li>
+                <li contenteditable="true">Audit magasin</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h3 contenteditable="true">Opportunité</h3>
+            <ul>
+                <li contenteditable="true">Améliorer la récupération de fer</li>
+                <li contenteditable="true">Augmenter le rendement</li>
+                <li contenteditable="true">Optimiser le flux de production</li>
+                <li contenteditable="true">Exploiter l’inventaire des big bags</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+// Function to add checkboxes and attach event for completion
+function wrapListItems() {
+    document.querySelectorAll('.card ul li, .subsection ul li').forEach(li => {
+        if (!li.querySelector('input[type="checkbox"]')) {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'task-checkbox';
+            if (!li.dataset.created) {
+                li.dataset.created = Date.now();
+            }
+            // Append the checkbox to the end of the list item so it appears after the text
+            li.appendChild(checkbox);
+            checkbox.addEventListener('change', function () {
+                if (checkbox.checked) {
+                    const taskText = li.textContent.trim();
+                    const category = li.closest('.card').querySelector('h3').textContent.trim();
+                    const dateCompleted = new Date().toLocaleDateString('fr-CA');
+                    const entry = { category: category, task: taskText, dateCompleted: dateCompleted };
+                    let completed = [];
+                    try {
+                        completed = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+                    } catch (e) { completed = []; }
+                    completed.push(entry);
+                    localStorage.setItem('completedTasks', JSON.stringify(completed));
+                    // remove the list item from its parent
+                    li.remove();
+                // Persist board state after removal
+                saveBoardState();
+                }
+            });
+        }
+    });
+}
+// Function to create add-row button
+function createAddRowButton(ul) {
+    const btn = document.createElement('button');
+    btn.className = 'add-row';
+    btn.textContent = '+ Ligne';
+    btn.addEventListener('click', function () {
+        const li = document.createElement('li');
+        li.setAttribute('contenteditable', 'true');
+        li.textContent = 'Nouvelle ligne';
+        li.dataset.created = Date.now();
+        ul.appendChild(li);
+        wrapListItems();
+        // Persist state after adding a new line
+        saveBoardState();
+    });
+    return btn;
+}
+// Function to attach row buttons to existing lists
+function attachRowButtons() {
+    document.querySelectorAll('.card').forEach(card => {
+        card.querySelectorAll(':scope > ul, .subsection > ul').forEach(ul => {
+            if (!ul.previousElementSibling || !ul.previousElementSibling.classList || !ul.previousElementSibling.classList.contains('add-row')) {
+                const btn = createAddRowButton(ul);
+                ul.parentNode.insertBefore(btn, ul);
+            }
+        });
+    });
+}
+
+// Save the current board state (excluding checkboxes and add-row buttons) to localStorage
+function saveBoardState() {
+    const grid = document.getElementById('grid');
+    // Clone the grid to avoid modifying the live DOM during cleanup
+    const clone = grid.cloneNode(true);
+    // Remove all checkboxes so they will be recreated on load
+    clone.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.remove());
+    // Remove add-row buttons; they will be recreated by attachRowButtons()
+    clone.querySelectorAll('.add-row').forEach(btn => btn.remove());
+    // Store the sanitized HTML
+    localStorage.setItem('boardHTML', clone.innerHTML);
+}
+
+// Load the board state from localStorage if it exists
+function loadBoardState() {
+    const grid = document.getElementById('grid');
+    const saved = localStorage.getItem('boardHTML');
+    if (saved) {
+        grid.innerHTML = saved;
+    }
+    // Reattach row buttons and checkboxes after loading the content
+    attachRowButtons();
+    wrapListItems();
+}
+// Function to create new card
+function createCard(title) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const h3 = document.createElement('h3');
+    h3.setAttribute('contenteditable', 'true');
+    h3.textContent = title || 'Nouvelle catégorie';
+    card.appendChild(h3);
+    const ul = document.createElement('ul');
+    card.appendChild(ul);
+    const addBtn = createAddRowButton(ul);
+    card.insertBefore(addBtn, ul);
+    // Persist state after creating a new card
+    saveBoardState();
+    return card;
+}
+// Initial setup: load any saved board state or default if none
+loadBoardState();
+// Add category button
+document.getElementById('addCategoryBtn').addEventListener('click', function () {
+    const title = prompt('Nom de la nouvelle catégorie :');
+    const card = createCard(title || 'Nouvelle catégorie');
+    document.getElementById('grid').appendChild(card);
+    wrapListItems();
+    // Persist state after adding a new category
+    saveBoardState();
+});
+// Completed tasks button
+document.getElementById('completedBtn').addEventListener('click', function () {
+    window.open('completed.html', '_blank');
+});
+
+// Persist changes whenever a contenteditable element loses focus
+document.addEventListener('blur', function (e) {
+    const target = e.target;
+    if (target && target.getAttribute && target.getAttribute('contenteditable') === 'true') {
+        saveBoardState();
+    }
+}, true);
+</script>
+</body>
+</html>
