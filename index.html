@@ -67,13 +67,17 @@
             /* allow absolute positioning for delete button */
             position: relative;
         }
-        .card h3 {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-            color: #0b3e6f;
-            border-bottom: 2px solid #0b3e6f;
-            padding-bottom: 4px;
-        }
+            .card h3 {
+                /* Use flexbox so the delete category button can align to the right of the title */
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin: 0 0 8px 0;
+                font-size: 16px;
+                color: #0b3e6f;
+                border-bottom: 2px solid #0b3e6f;
+                padding-bottom: 4px;
+            }
         .card ul {
             list-style: none;
             padding-left: 0;
@@ -424,8 +428,9 @@ function attachCommentSections() {
 // Attach delete buttons to each card to allow removing categories
 function attachDeleteCategoryButtons() {
     document.querySelectorAll('.card').forEach(card => {
-        // ensure we don't add multiple delete buttons
-        if (!card.querySelector('.delete-category')) {
+        const header = card.querySelector('h3');
+        // ensure we don't add multiple delete buttons within the header
+        if (header && !header.querySelector('.delete-category')) {
             const btn = document.createElement('span');
             btn.className = 'delete-category';
             btn.textContent = '✖';
@@ -436,8 +441,8 @@ function attachDeleteCategoryButtons() {
                 // Save board state after removing a category
                 saveBoardState();
             });
-            // Append button to the card element so positioning is relative to the card
-            card.appendChild(btn);
+            // Append button to the header so it appears next to the title
+            header.appendChild(btn);
         }
     });
 }
