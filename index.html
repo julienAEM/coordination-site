@@ -64,6 +64,8 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
+            /* allow absolute positioning for delete button */
+            position: relative;
         }
         .card h3 {
             margin: 0 0 8px 0;
@@ -161,6 +163,18 @@
             border: 1px solid #e0e0e0;
             padding: 4px;
             border-radius: 4px;
+        }
+        /* Delete category button */
+        .delete-category {
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            color: #dc3545;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            user-select: none;
+            z-index: 10;
         }
     </style>
 </head>
@@ -407,6 +421,27 @@ function attachCommentSections() {
     });
 }
 
+// Attach delete buttons to each card to allow removing categories
+function attachDeleteCategoryButtons() {
+    document.querySelectorAll('.card').forEach(card => {
+        // ensure we don't add multiple delete buttons
+        if (!card.querySelector('.delete-category')) {
+            const btn = document.createElement('span');
+            btn.className = 'delete-category';
+            btn.textContent = '✖';
+            btn.setAttribute('contenteditable', 'false');
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                card.remove();
+                // Save board state after removing a category
+                saveBoardState();
+            });
+            // Append button to the card element so positioning is relative to the card
+            card.appendChild(btn);
+        }
+    });
+}
+
 // Function to create add-row button
 function createAddRowButton(ul) {
     const btn = document.createElement('button');
@@ -447,6 +482,8 @@ function saveBoardState() {
     clone.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.remove());
     // Remove add-row buttons; they will be recreated by attachRowButtons()
     clone.querySelectorAll('.add-row').forEach(btn => btn.remove());
+    // Remove category delete buttons so they will be recreated on load
+    clone.querySelectorAll('.delete-category').forEach(btn => btn.remove());
     // Store the sanitized HTML
     localStorage.setItem('boardHTML', clone.innerHTML);
 }
@@ -464,6 +501,8 @@ function loadBoardState() {
     // Add comment sections and delete buttons after restoring list items
     attachCommentSections();
     attachDeleteButtons();
+    // Add delete-category buttons after restoring list items
+    attachDeleteCategoryButtons();
 }
 // Function to create new card
 function createCard(title) {
@@ -481,6 +520,8 @@ function createCard(title) {
     attachCommentSections();
     // Add delete buttons to existing rows (if any)
     attachDeleteButtons();
+    // Add a delete button to the new category
+    attachDeleteCategoryButtons();
     // Persist state after creating a new card
     saveBoardState();
     return card;
@@ -496,6 +537,7 @@ document.getElementById('addCategoryBtn').addEventListener('click', function () 
     wrapListItems();
     attachCommentSections();
     attachDeleteButtons();
+    attachDeleteCategoryButtons();
     // Persist state after adding a new category
     saveBoardState();
 });
