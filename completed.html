@@ -101,6 +101,20 @@
         .btn-bar button:hover {
             background-color: #c82333;
         }
+        /* Style for the 'Retour au tableau' button */
+        #backBtn {
+            background-color: #0071c4;
+            color: #ffffff;
+            border: none;
+            padding: 8px 14px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        #backBtn:hover {
+            background-color: #005a9e;
+        }
     </style>
 </head>
 <body>
@@ -115,6 +129,7 @@
         <!-- Conteneur pour les sections par catégorie -->
         <div id="categoryContainer"></div>
         <div class="btn-bar">
+            <button id="backBtn">Retour au tableau</button>
             <button id="clearCompletedBtn">Réinitialiser</button>
         </div>
     </div>
@@ -202,6 +217,11 @@ function clearCompleted() {
 }
 document.getElementById('clearCompletedBtn').addEventListener('click', clearCompleted);
 window.addEventListener('load', loadCompleted);
+// Ajouter un gestionnaire pour retourner au tableau de coordination
+document.getElementById('backBtn').addEventListener('click', function() {
+    // Rediriger vers la page d'accueil du tableau
+    window.location.href = 'index.html';
+});
 </script>
 </body>
 </html>
