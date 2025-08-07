@@ -65,7 +65,8 @@
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            /* Display two columns instead of three to increase card width */
+            grid-template-columns: repeat(2, 1fr);
             grid-gap: 15px;
         }
         .card {
@@ -581,6 +582,8 @@ function handleDrop(e) {
         }
         // After reordering, persist the new state
         saveBoardState();
+        // Reassign colours to reflect new order
+        assignColors();
     }
     return false;
 }
@@ -588,6 +591,27 @@ function handleDrop(e) {
 // Handler for when drag ends; cleanup visual class
 function handleDragEnd() {
     this.classList.remove('dragging');
+}
+
+// -------- Category color assignment --------
+
+// Define a palette of soft background colors to distinguish categories. Feel free to adjust or expand this list.
+const categoryColors = [
+    '#e3f2fd', // light blue
+    '#e8f5e9', // light green
+    '#fff3e0', // light orange
+    '#fce4ec', // light pink
+    '#ede7f6', // light purple
+    '#f9fbe7'  // light yellow
+];
+
+// Assign a background color to each card based on its order in the grid
+function assignColors() {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        const color = categoryColors[index % categoryColors.length];
+        card.style.backgroundColor = color;
+    });
 }
 
 // Load the board state from localStorage if it exists
@@ -607,6 +631,8 @@ function loadBoardState() {
     attachDeleteCategoryButtons();
     // Enable drag‑and‑drop functionality on all loaded cards
     enableDragAndDrop();
+    // Assign colours to each card
+    assignColors();
 }
 // Function to create new card
 function createCard(title) {
@@ -630,6 +656,8 @@ function createCard(title) {
     saveBoardState();
     // Enable drag‑and‑drop for this new card and any others
     enableDragAndDrop();
+    // Assign colours after creating a new card
+    assignColors();
     return card;
 }
 // Initial setup: load any saved board state or default if none
@@ -648,6 +676,8 @@ document.getElementById('addCategoryBtn').addEventListener('click', function () 
     saveBoardState();
     // Re-enable drag‑and‑drop to include the new card
     enableDragAndDrop();
+    // Reassign colours after adding a new category
+    assignColors();
 });
 // Completed tasks button
 document.getElementById('completedBtn').addEventListener('click', function () {
