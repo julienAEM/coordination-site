@@ -77,6 +77,9 @@
             flex-direction: column;
             /* allow absolute positioning for delete button */
             position: relative;
+            /* Allow cards to be dragged */
+            /* The draggable attribute will be set via JavaScript, but we set user-select here to ensure text isn't selected while dragging */
+            user-select: none;
         }
             .card h3 {
                 /* Use flexbox so the delete category button can align to the right of the title */
@@ -95,6 +98,10 @@
             margin: 0;
             font-size: 14px;
             line-height: 1.4;
+        }
+        /* Highlight a card while it is being dragged */
+        .card.dragging {
+            opacity: 0.6;
         }
         .card ul li {
             margin-bottom: 4px;
@@ -507,6 +514,82 @@ function saveBoardState() {
     localStorage.setItem('boardHTML', clone.innerHTML);
 }
 
+// -------- Drag and Drop Implementation --------
+
+// Global variable to store the element being dragged
+let dragSrcEl = null;
+
+// Attach drag & drop attributes and handlers to each card
+function enableDragAndDrop() {
+    const grid = document.getElementById('grid');
+    if (!grid) return;
+    // Loop through all cards and set them as draggable
+    grid.querySelectorAll('.card').forEach(card => {
+        card.setAttribute('draggable', 'true');
+        // Remove any previously attached listeners to avoid duplicates
+        card.removeEventListener('dragstart', handleDragStart);
+        card.removeEventListener('dragover', handleDragOver);
+        card.removeEventListener('drop', handleDrop);
+        card.removeEventListener('dragend', handleDragEnd);
+        // Attach events
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragover', handleDragOver);
+        card.addEventListener('drop', handleDrop);
+        card.addEventListener('dragend', handleDragEnd);
+    });
+}
+
+// Handler for when dragging starts
+function handleDragStart(e) {
+    dragSrcEl = this;
+    this.classList.add('dragging');
+    // Set the allowed effect to move
+    e.dataTransfer.effectAllowed = 'move';
+    // For Firefox compatibility, must set some data
+    try {
+        e.dataTransfer.setData('text/html', this.innerHTML);
+    } catch (err) {
+        // ignore, not all browsers require data
+    }
+}
+
+// Handler for when dragging over another card; must prevent default to allow drop
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+// Handler for dropping onto another card
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+    // Only proceed if the source and target are different
+    if (dragSrcEl && dragSrcEl !== this) {
+        const grid = document.getElementById('grid');
+        const cards = Array.from(grid.children);
+        const srcIndex = cards.indexOf(dragSrcEl);
+        const targetIndex = cards.indexOf(this);
+        // Determine insertion point based on index
+        if (srcIndex < targetIndex) {
+            grid.insertBefore(dragSrcEl, this.nextSibling);
+        } else {
+            grid.insertBefore(dragSrcEl, this);
+        }
+        // After reordering, persist the new state
+        saveBoardState();
+    }
+    return false;
+}
+
+// Handler for when drag ends; cleanup visual class
+function handleDragEnd() {
+    this.classList.remove('dragging');
+}
+
 // Load the board state from localStorage if it exists
 function loadBoardState() {
     const grid = document.getElementById('grid');
@@ -522,6 +605,8 @@ function loadBoardState() {
     attachDeleteButtons();
     // Add delete-category buttons after restoring list items
     attachDeleteCategoryButtons();
+    // Enable drag‑and‑drop functionality on all loaded cards
+    enableDragAndDrop();
 }
 // Function to create new card
 function createCard(title) {
@@ -543,6 +628,8 @@ function createCard(title) {
     attachDeleteCategoryButtons();
     // Persist state after creating a new card
     saveBoardState();
+    // Enable drag‑and‑drop for this new card and any others
+    enableDragAndDrop();
     return card;
 }
 // Initial setup: load any saved board state or default if none
@@ -559,6 +646,8 @@ document.getElementById('addCategoryBtn').addEventListener('click', function () 
     attachDeleteCategoryButtons();
     // Persist state after adding a new category
     saveBoardState();
+    // Re-enable drag‑and‑drop to include the new card
+    enableDragAndDrop();
 });
 // Completed tasks button
 document.getElementById('completedBtn').addEventListener('click', function () {
