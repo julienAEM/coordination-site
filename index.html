@@ -65,8 +65,8 @@
         }
         .grid {
             display: grid;
-            /* Display two columns instead of three to increase card width */
-            grid-template-columns: repeat(2, 1fr);
+            /* Display a single column as requested */
+            grid-template-columns: repeat(1, 1fr);
             grid-gap: 15px;
         }
         .card {
@@ -215,7 +215,7 @@
     </div>
     <!-- Grid for cards -->
     <div class="grid" id="grid">
-        <!-- Ligne 1 -->
+        <!-- Réorganisation : une seule colonne avec regroupements demandés -->
         <div class="card">
             <h3 contenteditable="true">SST / Environnement</h3>
             <ul>
@@ -223,49 +223,24 @@
                 <li contenteditable="true">Varin – 04/08</li>
                 <li contenteditable="true">M3 FID – 30/07</li>
             </ul>
+            <div class="subsection">
+                <h4 contenteditable="true">Cadencassage</h4>
+                <ul>
+                    <li contenteditable="true">Total : 305</li>
+                    <li contenteditable="true">Brouillon : 48</li>
+                    <li contenteditable="true">En cours : 55</li>
+                    <li contenteditable="true">Terminé : 202 (66 %)</li>
+                </ul>
+            </div>
         </div>
         <div class="card">
-            <h3 contenteditable="true">Production</h3>
+            <h3 contenteditable="true">Production et point de vigilance</h3>
             <ul>
                 <li contenteditable="true">M7 atérminé : 1000 kg</li>
                 <li contenteditable="true">MD2 minipilot : 200 kg</li>
                 <li contenteditable="true">780 kg slurry BDO : 11 août</li>
                 <li contenteditable="true">Suite à venir : CRB</li>
             </ul>
-        </div>
-        <div class="card">
-            <h3 contenteditable="true">Matières premières</h3>
-            <ul>
-                <li contenteditable="true">HCl : 39 % (cible 45 %)</li>
-                <li contenteditable="true">HXK : 68 %</li>
-                <li contenteditable="true">NaOH : 62 %</li>
-                <li contenteditable="true">Filtrat : 9 %</li>
-                <li contenteditable="true">Fuel : 5 cttes (cette semaine)</li>
-            </ul>
-        </div>
-        <!-- Ligne 2 -->
-        <div class="card">
-            <h3 contenteditable="true">Cadencassage</h3>
-            <ul>
-                <li contenteditable="true">Total : 305</li>
-                <li contenteditable="true">Brouillon : 48</li>
-                <li contenteditable="true">En cours : 55</li>
-                <li contenteditable="true">Terminé : 202 (66 %)</li>
-            </ul>
-        </div>
-        <div class="card">
-            <h3 contenteditable="true">Entretien mécanique</h3>
-            <ul>
-                <li contenteditable="true">GICO à réparer (Mike)</li>
-                <li contenteditable="true">HPGO‑AGO‑K03 : board reçu brisé</li>
-                <li contenteditable="true">D02 : seal mécanique</li>
-                <li contenteditable="true">HPGO‑AGO‑PO1 : boyau à changer</li>
-                <li contenteditable="true">Nourrice Merlin : à changer (Mike)</li>
-                <li contenteditable="true">CF10‑AGO‑PO1 : à réparer</li>
-            </ul>
-        </div>
-        <div class="card">
-            <h3 contenteditable="true">Point de vigilance</h3>
             <div class="subsection">
                 <h4 contenteditable="true">À risque</h4>
                 <ul>
@@ -277,10 +252,7 @@
             <div class="subsection">
                 <h4 contenteditable="true">En suivi</h4>
                 <ul>
-                    <li contenteditable="true">HPGO‑AGO‑K03 : board reçu brisé</li>
-                    <li contenteditable="true">D02 : seal mécanique</li>
-                    <li contenteditable="true">HPGO‑AGO‑PO1 : boyau à changer</li>
-                    <li contenteditable="true">Nourrice Merlin : à changer</li>
+                    <!-- Tous les éléments en suivi qui étaient en double ailleurs ont été retirés -->
                 </ul>
             </div>
             <div class="subsection">
@@ -292,30 +264,25 @@
                 </ul>
             </div>
         </div>
-        <!-- Ligne 3 -->
         <div class="card">
-            <h3 contenteditable="true">Projets</h3>
+            <h3 contenteditable="true">Matières premières</h3>
             <ul>
-                <li contenteditable="true">FO4 – ventilateur à déplacer</li>
-                <li contenteditable="true">R03 – travaux à venir</li>
-                <li contenteditable="true">Robot FIO – réparation à suivre</li>
-                <li contenteditable="true">Salle blanche – chauffage & ventilation</li>
-                <li contenteditable="true">Pellet</li>
-                <li contenteditable="true">Presse</li>
-                <li contenteditable="true">Phadia</li>
-                <li contenteditable="true">Détecteur HCl</li>
+                <li contenteditable="true">HCl : 39 % (cible 45 %)</li>
+                <li contenteditable="true">HXK : 68 %</li>
+                <li contenteditable="true">NaOH : 62 %</li>
+                <li contenteditable="true">Filtrat : 9 %</li>
+                <li contenteditable="true">Fuel : 5 cttes (cette semaine)</li>
             </ul>
         </div>
         <div class="card">
-            <h3 contenteditable="true">Technique</h3>
+            <h3 contenteditable="true">Entretien mécanique</h3>
             <ul>
-                <li contenteditable="true">Lavage SO<sub>2</sub></li>
-                <li contenteditable="true">Cristalliseur</li>
-                <li contenteditable="true">Distillat acide</li>
-                <li contenteditable="true">FB01</li>
-                <li contenteditable="true">Test CM + nettoyage prioritaire</li>
-                <li contenteditable="true">Test DRM</li>
-                <li contenteditable="true">CMI Harper – planifier nettoyage</li>
+                <li contenteditable="true">GICO à réparer (Mike)</li>
+                <li contenteditable="true">HPGO‑AGO‑K03 : board reçu brisé</li>
+                <li contenteditable="true">D02 : seal mécanique</li>
+                <li contenteditable="true">HPGO‑AGO‑PO1 : boyau à changer</li>
+                <li contenteditable="true">Nourrice Merlin : à changer (Mike)</li>
+                <li contenteditable="true">CF10‑AGO‑PO1 : à réparer</li>
             </ul>
         </div>
         <div class="card">
@@ -339,25 +306,55 @@
                 <li contenteditable="true">HK : 175 kg (1er), 245 kg (2e)</li>
             </ul>
         </div>
-        <!-- Ligne 4 -->
         <div class="card">
-            <h3 contenteditable="true">Ménage</h3>
-            <ul>
-                <li contenteditable="true">Laver cuve HXK</li>
-                <li contenteditable="true">Remplacer pièce HCl</li>
-                <li contenteditable="true">Vérifier fond à vider (OK)</li>
-                <li contenteditable="true">Peindre cadre porte grange</li>
-                <li contenteditable="true">Tapisser l’intérieur des poubelles</li>
-            </ul>
+            <h3 contenteditable="true">Propreté / Bon ordre</h3>
+            <div class="subsection">
+                <h4 contenteditable="true">Ménage</h4>
+                <ul>
+                    <li contenteditable="true">Laver cuve HXK</li>
+                    <li contenteditable="true">Remplacer pièce HCl</li>
+                    <li contenteditable="true">Vérifier fond à vider (OK)</li>
+                    <li contenteditable="true">Peindre cadre porte grange</li>
+                    <li contenteditable="true">Tapisser l’intérieur des poubelles</li>
+                </ul>
+            </div>
+            <div class="subsection">
+                <h4 contenteditable="true">Actions Nisshin</h4>
+                <ul>
+                    <li contenteditable="true">Audit hypochlorite</li>
+                    <li contenteditable="true">Audit hypotraction</li>
+                    <li contenteditable="true">Audit extérieur</li>
+                    <li contenteditable="true">Audit magasin</li>
+                </ul>
+            </div>
         </div>
         <div class="card">
-            <h3 contenteditable="true">Actions Nisshin</h3>
-            <ul>
-                <li contenteditable="true">Audit hypochlorite</li>
-                <li contenteditable="true">Audit hypotraction</li>
-                <li contenteditable="true">Audit extérieur</li>
-                <li contenteditable="true">Audit magasin</li>
-            </ul>
+            <h3 contenteditable="true">Ingénierie</h3>
+            <div class="subsection">
+                <h4 contenteditable="true">Projets</h4>
+                <ul>
+                    <li contenteditable="true">FO4 – ventilateur à déplacer</li>
+                    <li contenteditable="true">R03 – travaux à venir</li>
+                    <li contenteditable="true">Robot FIO – réparation à suivre</li>
+                    <li contenteditable="true">Salle blanche – chauffage & ventilation</li>
+                    <li contenteditable="true">Pellet</li>
+                    <li contenteditable="true">Presse</li>
+                    <li contenteditable="true">Phadia</li>
+                    <li contenteditable="true">Détecteur HCl</li>
+                </ul>
+            </div>
+            <div class="subsection">
+                <h4 contenteditable="true">Technique</h4>
+                <ul>
+                    <li contenteditable="true">Lavage SO<sub>2</sub></li>
+                    <li contenteditable="true">Cristalliseur</li>
+                    <li contenteditable="true">Distillat acide</li>
+                    <li contenteditable="true">FB01</li>
+                    <li contenteditable="true">Test CM + nettoyage prioritaire</li>
+                    <li contenteditable="true">Test DRM</li>
+                    <li contenteditable="true">CMI Harper – planifier nettoyage</li>
+                </ul>
+            </div>
         </div>
         <div class="card">
             <h3 contenteditable="true">Opportunité</h3>
