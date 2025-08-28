@@ -2,6 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <!-- Automatically refresh the page every 20 minutes (1200 seconds) -->
+    <meta http-equiv="refresh" content="1200">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de Coordination Opération (Éditable, Tâches complétées)</title>
     <style>
@@ -75,6 +77,8 @@
             max-height: calc(100vh - 180px);
             overflow-x: auto;
             overflow-y: hidden;
+    /* Center the cards horizontally when there is extra space */
+    justify-content: center;
         }
 
         /* Each card acts as a pillar with its own vertical scrolling */
@@ -166,6 +170,30 @@
         }
         .add-row:hover {
             background-color: #d3d8e0;
+        }
+
+        /* Style for the button to add a new subsection within a card */
+        .add-section {
+            align-self: flex-start;
+            margin: 4px 0;
+            background-color: #e7eaf3;
+            color: #0b3e6f;
+            border: none;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .add-section:hover {
+            background-color: #d3d8e0;
+        }
+
+        /* Delete button for subsections */
+        .section-delete-btn {
+            color: #dc3545;
+            cursor: pointer;
+            user-select: none;
+            margin-left: 6px;
         }
 
         /* Comment section and delete button styles */
@@ -526,6 +554,87 @@ function attachRowButtons() {
     });
 }
 
+// Attach a delete button to each subsection header (h4) allowing the subsection to be removed
+function attachSubsectionDeleteButtons() {
+    document.querySelectorAll('.subsection').forEach(subsection => {
+        const h4 = subsection.querySelector('h4');
+        if (h4 && !h4.querySelector('.section-delete-btn')) {
+            const del = document.createElement('span');
+            del.className = 'section-delete-btn';
+            del.textContent = '✖';
+            del.setAttribute('contenteditable', 'false');
+            del.title = 'Supprimer la sous-catégorie';
+            del.addEventListener('click', function (e) {
+                e.stopPropagation();
+                // Remove the entire subsection
+                subsection.remove();
+                // Persist the state after deletion
+                saveBoardState();
+            });
+            h4.appendChild(del);
+        }
+    });
+}
+
+// Attach a "+ Sous‑section" button to each card to allow adding new subsections
+function attachSectionButtons() {
+    document.querySelectorAll('.card').forEach(card => {
+        if (!card.querySelector('.add-section')) {
+            const btn = document.createElement('button');
+            btn.className = 'add-section';
+            btn.textContent = '+ Sous‑section';
+            btn.addEventListener('click', function () {
+                const title = prompt('Nom de la nouvelle sous‑section :');
+                if (!title) return;
+                // Create the new subsection element
+                const subsection = document.createElement('div');
+                subsection.className = 'subsection';
+                const h4 = document.createElement('h4');
+                h4.setAttribute('contenteditable', 'true');
+                h4.textContent = title;
+                // Delete button for this subsection
+                const del = document.createElement('span');
+                del.className = 'section-delete-btn';
+                del.textContent = '✖';
+                del.setAttribute('contenteditable', 'false');
+                del.title = 'Supprimer la sous-catégorie';
+                del.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    subsection.remove();
+                    saveBoardState();
+                });
+                h4.appendChild(del);
+                subsection.appendChild(h4);
+                // Create the list and add-row button for this subsection
+                const ul = document.createElement('ul');
+                subsection.appendChild(ul);
+                const addRowBtn = createAddRowButton(ul);
+                subsection.appendChild(addRowBtn);
+                // Insert the subsection before the comment section or at the end
+                const commentSec = card.querySelector('.comment-section');
+                if (commentSec) {
+                    card.insertBefore(subsection, commentSec);
+                } else {
+                    card.appendChild(subsection);
+                }
+                // Reapply helpers for the new subsection
+                wrapListItems();
+                attachDeleteButtons();
+                attachSubsectionDeleteButtons();
+                // Persist the state after adding
+                saveBoardState();
+            });
+            // Insert the add-section button before the comment section or at the end of the card
+            const commentSec = card.querySelector('.comment-section');
+            if (commentSec) {
+                card.insertBefore(btn, commentSec);
+            } else {
+                card.appendChild(btn);
+            }
+        }
+    });
+}
+
 // Save the current board state (excluding checkboxes and add-row buttons) to localStorage
 function saveBoardState() {
     const grid = document.getElementById('grid');
@@ -659,6 +768,9 @@ function loadBoardState() {
     enableDragAndDrop();
     // Assign colours to each card
     assignColors();
+    // Add subsection delete buttons and add-section buttons after content is loaded
+    attachSubsectionDeleteButtons();
+    attachSectionButtons();
 }
 // Function to create new card
 function createCard(title) {
@@ -678,6 +790,9 @@ function createCard(title) {
     attachDeleteButtons();
     // Add a delete button to the new category
     attachDeleteCategoryButtons();
+    // Add a subsection delete button and add-section button to the new card
+    attachSubsectionDeleteButtons();
+    attachSectionButtons();
     // Persist state after creating a new card
     saveBoardState();
     // Enable drag‑and‑drop for this new card and any others
@@ -698,6 +813,8 @@ document.getElementById('addCategoryBtn').addEventListener('click', function () 
     attachCommentSections();
     attachDeleteButtons();
     attachDeleteCategoryButtons();
+    attachSubsectionDeleteButtons();
+    attachSectionButtons();
     // Persist state after adding a new category
     saveBoardState();
     // Re-enable drag‑and‑drop to include the new card
