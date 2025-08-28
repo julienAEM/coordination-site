@@ -13,7 +13,9 @@
             color: #333;
         }
         .board {
-            max-width: 1200px;
+            /* Use full width to allow all pillars to be visible horizontally */
+            max-width: none;
+            width: 100%;
             margin: 30px auto;
             padding: 10px;
         }
@@ -64,10 +66,22 @@
             background-color: #004070;
         }
         .grid {
-            display: grid;
-            /* Display a single column as requested */
-            grid-template-columns: repeat(1, 1fr);
-            grid-gap: 15px;
+            /* Arrange categories as horizontal pillars */
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 15px;
+            /* Constrain height so everything fits on one page; allow horizontal scrolling for overflow */
+            max-height: calc(100vh - 180px);
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        /* Each card acts as a pillar with its own vertical scrolling */
+        .card {
+            flex: 0 0 280px;
+            max-height: 100%;
+            overflow-y: auto;
         }
         .card {
             background: #ffffff;
